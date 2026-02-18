@@ -62,10 +62,31 @@ function Tasks() {
     }
   }
   
+  const handleEdit = async (task) => {
+    const updatedTitle = prompt("Edit task title:", task.title)
+
+    if(updatedTitle === null) return;
+    if(!updatedTitle.trim()) return alert("Title cannot be empty."); 
+
+    try {
+      const res = await api.put(`/tasks/${task.id}`, {
+        title: updatedTitle.trim(), 
+        isDone: task.isDone,
+      })
+
+      setTasks((prev) => 
+        prev.map((t) => (t.id === task.id ? res.data : t))
+      );
+    } catch (err) {
+      console.error(err); 
+      alert("Failed to update task.")
+    }
+
+  }
+  
   return (
     <main className="p-10">
       <h1 className="text-3xl font-bold mb-6">Tasks</h1>
-
       {/* Add Form */}
       <form onSubmit={handleAddTask} className="flex gap-4 mb-6">
         <input
@@ -109,12 +130,20 @@ function Tasks() {
                 User ID: {task.userId}
               </p>
             </div>
-            <button
+            <div className="flex gap-4 flex-row justify-center items-center">
+              <button
               onClick={() => handleToggle(task)}
-              className="mt-3 text-sm shadow-sm bg-gray-400 text-white px-3 py-1 border rounded hover:bg-gray-200"
-            >
-              Toggle
-            </button>
+              className="text-sm shadow-sm bg-gray-400 text-white px-3 py-1 border rounded hover:bg-gray-200"
+              >
+                Toggle
+              </button>
+              <button
+                onClick={() => handleEdit(task)}
+                className="px-3 text-sm py-1 border bg-blue-300 text-white rounded hover:bg-gray-100"
+              >
+                Edit
+              </button>
+            </div>
             </li>
         ))}
       </ul>
