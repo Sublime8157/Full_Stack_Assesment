@@ -19,6 +19,23 @@ namespace TaskManager.API
             _context = context;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var tasks = await _context.Tasks
+                .AsNoTracking()
+                .Select(t => new TaskResponse
+                {
+                    Id = t.Id,
+                    Title = t.Title,
+                    IsDone = t.IsDone,
+                    UserId = t.UserId
+                })
+                .ToListAsync();
+
+            return Ok(tasks);
+        }
+
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -84,7 +101,7 @@ namespace TaskManager.API
             return Ok(response);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
             var task = await _context.Tasks.FindAsync(id);
