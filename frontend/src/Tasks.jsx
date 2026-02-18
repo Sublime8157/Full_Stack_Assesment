@@ -32,7 +32,7 @@ function Tasks() {
       const res = await api.post("/tasks", {
         title: newTitle.trim(), 
         isDone: false, 
-        userId: 1, 
+        userId: 1, // hardcoded as i was not able to support adding a user route on backend
       }); 
 
       setTasks((prev) => [...prev, res.data]); 
