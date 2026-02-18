@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using TaskManager.Models;
 using TaskManager.Data;
+using TaskManager.API.DTOs;
 namespace TaskManager.API
 {
     [Route("tasks")]
@@ -18,21 +19,31 @@ namespace TaskManager.API
             _context = context;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Get()
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetById(int id)
         {
-            
-            var tasks = await _context.Tasks.ToListAsync();
-            return Ok(tasks);
+            var task = await _context.Tasks.FindAsync(id);
+
+            if(task == null)
+                return NotFound();
+
+            return Ok(task);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] TaskItem task)
+        public async Task<IActionResult> Create([FromBody] CreateTaskRequest req)
         {
-            
+            var task = new TaskItem
+            {
+                Title = req.Title,
+                IsDone = req.IsDone,
+                UserId = req.UserId
+            };
+
             _context.Tasks.Add(task);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(Get), new { id = task.Id }, task);
+
+            return CreatedAtAction(nameof(GetById), new { id = task.Id }, task);
         }
 
         [HttpPut("{id}")] 
