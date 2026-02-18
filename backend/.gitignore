@@ -19,7 +19,6 @@ obj/
 
 # dotenv
 .env
-.env.*
 appsettings.Development.json
 
 # Logs
