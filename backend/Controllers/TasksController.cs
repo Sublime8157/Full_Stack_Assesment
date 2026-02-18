@@ -27,7 +27,15 @@ namespace TaskManager.API
             if(task == null)
                 return NotFound();
 
-            return Ok(task);
+            var response = new TaskResponse
+            {
+                Id = task.Id,
+                Title = task.Title,
+                IsDone = task.IsDone,
+                UserId = task.UserId
+            };
+
+            return Ok(response);
         }
 
         [HttpPost]
@@ -43,20 +51,37 @@ namespace TaskManager.API
             _context.Tasks.Add(task);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetById), new { id = task.Id }, task);
+            var response = new TaskResponse
+            {
+                Id = task.Id,
+                Title = task.Title,
+                IsDone = task.IsDone,
+                UserId = task.UserId
+            };
+
+            return CreatedAtAction(nameof(GetById), new { id = task.Id }, response);
         }
 
-        [HttpPut("{id}")] 
-        public async Task<IActionResult> Update(int id, [FromBody] TaskItem updated)
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateTaskRequest req)
         {
             var task = await _context.Tasks.FindAsync(id);
             if (task == null) return NotFound();
 
-            task.Title = updated.Title;
-            task.IsDone = updated.IsDone;
+            task.Title = req.Title;
+            task.IsDone = req.IsDone;
+
             await _context.SaveChangesAsync();
 
-            return Ok(task);
+            var response = new TaskResponse
+            {
+                Id = task.Id,
+                Title = task.Title,
+                IsDone = task.IsDone,
+                UserId = task.UserId
+            };
+
+            return Ok(response);
         }
 
         [HttpDelete("{id}")]
