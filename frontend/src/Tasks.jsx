@@ -45,6 +45,23 @@ function Tasks() {
     
   }
   
+  const handleToggle = async (task) => {
+    try {
+      const res = await api.put(`/tasks/${task.id}`, {
+        title: task.title,
+        isDone: !task.isDone,
+      });
+
+      setTasks((prev) => 
+        prev.map((t) => (t.id === task.id ? res.data : t))
+      );
+    }
+    catch (error) {
+      console.error(err);
+      alert("Failed to toggle task.")
+    }
+  }
+  
   return (
     <main className="p-10">
       <h1 className="text-3xl font-bold mb-6">Tasks</h1>
@@ -77,20 +94,28 @@ function Tasks() {
         {tasks.map((task) => (
           <li
             key={task.id}
-            className="bg-white shadow rounded p-4"
+            className="flex flex-row items-center justify-evenly bg-white shadow rounded p-4"
           >
-            <h2 className="text-lg font-semibold">{task.title}</h2>
-            <p
-              className={`text-sm ${
-                task.isDone ? "text-green-600" : "text-orange-500"
-              }`}
+            <div>
+              <h2 className="text-lg font-semibold">{task.title}</h2>
+              <p
+                className={`text-sm ${
+                  task.isDone ? "text-green-600" : "text-orange-500"
+                }`}
+              >
+                {task.isDone ? "Done" : "Not yet"}
+              </p>
+              <p className="text-xs text-gray-500">
+                User ID: {task.userId}
+              </p>
+            </div>
+            <button
+              onClick={() => handleToggle(task)}
+              className="mt-3 text-sm shadow-sm bg-gray-400 text-white px-3 py-1 border rounded hover:bg-gray-200"
             >
-              {task.isDone ? "Done" : "Not yet"}
-            </p>
-            <p className="text-xs text-gray-500">
-              User ID: {task.userId}
-            </p>
-          </li>
+              Toggle
+            </button>
+            </li>
         ))}
       </ul>
     </main>
