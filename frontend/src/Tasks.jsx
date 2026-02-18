@@ -84,6 +84,22 @@ function Tasks() {
 
   }
   
+  const handleDelete = async (task) => {
+    const ok = confirm("Delete this task?")
+    const id = task.id
+    if(!ok) return
+
+    try {
+      await api.delete(`/tasks/${id}`)
+
+      setTasks((prev) => prev.filter((t) => t.id !== id)); 
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete task.")
+    }
+    
+  }
+  
   return (
     <main className="p-10">
       <h1 className="text-3xl font-bold mb-6">Tasks</h1>
@@ -115,9 +131,9 @@ function Tasks() {
         {tasks.map((task) => (
           <li
             key={task.id}
-            className="flex flex-row items-center justify-evenly bg-white shadow rounded p-4"
+            className="flex flex-row items-center justify-between px-12 bg-white shadow rounded p-4"
           >
-            <div>
+            <div className="flex flex-col items-start" >
               <h2 className="text-lg font-semibold">{task.title}</h2>
               <p
                 className={`text-sm ${
@@ -142,6 +158,12 @@ function Tasks() {
                 className="px-3 text-sm py-1 border bg-blue-300 text-white rounded hover:bg-gray-100"
               >
                 Edit
+              </button>
+              <button
+                onClick={() => handleDelete(task)}
+                className="px-3 text-sm py-1 border bg-red-300 text-white rounded hover:bg-gray-100"
+              >
+                Delete
               </button>
             </div>
             </li>
