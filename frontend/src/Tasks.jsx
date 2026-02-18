@@ -5,6 +5,7 @@ function Tasks() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [newTitle, setNewTitle] = useState("");
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -22,9 +23,48 @@ function Tasks() {
     fetchTasks();
   }, []);
 
+  const handleAddTask = async (e) => {
+    e.preventDefault()
+
+    if(!newTitle.trim()) return;
+
+    try {
+      const res = await api.post("/tasks", {
+        title: newTitle.trim(), 
+        isDone: false, 
+        userId: 1, 
+      }); 
+
+      setTasks((prev) => [...prev, res.data]); 
+      setNewTitle("");
+    }
+    catch(error){
+        console.error(err)
+        alert("Failed to add task.")
+    }
+    
+  }
+  
   return (
     <main className="p-10">
       <h1 className="text-3xl font-bold mb-6">Tasks</h1>
+
+      {/* Add Form */}
+      <form onSubmit={handleAddTask} className="flex gap-4 mb-6">
+        <input
+          type="text"
+          placeholder="Enter task title..."
+          value={newTitle}
+          onChange={(e) => setNewTitle(e.target.value)}
+          className="flex-1 border rounded px-3 py-2"
+        />
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-5 py-2 rounded"
+        >
+          Add
+        </button>
+      </form>
 
       {loading && <p>Loading...</p>}
       {error && <p className="text-red-500">{error}</p>}
